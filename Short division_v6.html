@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Jo⚡Go Short Division Practice</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+
+    <!-- Apple PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <!-- or default -->
+    <meta name="apple-mobile-web-app-title" content="JoGo Division">
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png"> <!-- Create this 180x180 icon -->
+
+    <!-- Theme Color for Android PWA -->
+    <meta name="theme-color" content="#4CAF50">
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overscroll-behavior-y: contain;
+            height: 100%; 
+        }
+        body {
+            font-family: 'Roboto', Arial, sans-serif; /* Default font for body */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* margin-top: 10px; /* Removed for full background */
+            padding-bottom: 50px; /* Keep for content spacing from bottom */
+
+            /* NEW: Wooden Desk Background */
+            background-image: url('https://raw.githubusercontent.com/bajoseph01/3DFlashCard/bbe888649ba5d2302e9f829d0eeac96e12a0a53e/WoodTableBack.png');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* Keeps background static during scroll */
+        }
+
+        /* Text-based Logo Styles */
+        .app-branding {
+            text-align: center;
+            margin-top: 20px; /* Added margin here if needed, instead of body margin-top */
+            margin-bottom: 20px; /* Space between logo/subtitle and main app */
+        }
+        .app-logo-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5em; /* Main logo size */
+            font-weight: 700; /* Poppins bold */
+            color: #333; /* Consider a lighter color if text is hard to read on wood */
+            /* text-shadow: 0px 0px 5px rgba(255,255,255,0.7); /* Optional shadow for readability */
+            margin-bottom: 2px; /* Small space before subtitle */
+        }
+        .app-logo-text .lightning {
+            color: #f0ad4e; /* Yellow/Orange for lightning bolt */
+        }
+        .app-subtitle {
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9em;
+            color: #444; /* Slightly lighter for readability on wood */
+            /* text-shadow: 0px 0px 3px rgba(255,255,255,0.5); */
+            font-weight: 400; /* Roboto regular */
+        }
+
+
+        .main-content-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            width: auto;
+            max-width: 1200px;
+            margin: 0 auto;
+            /* Optional: Add a semi-transparent background to the content area for better readability over the wood */
+            /* background-color: rgba(255, 255, 255, 0.85); */
+            /* padding: 20px; */
+            /* border-radius: 10px; */
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 400px;
+            flex-shrink: 0;
+        }
+        .equation-input { margin-bottom: 15px; }
+        .equation-input input[type="text"] { padding: 8px; margin-right: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        .equation-input button, .check-button { padding: 8px 15px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .equation-input button:hover, .check-button:hover { background-color: #45a049; }
+
+        .problem-area { margin-top: 20px; display: flex; align-items: flex-end; justify-content: center; font-size: 2em; min-height: 100px; }
+        .divisor-display { margin-right: 2px; padding-bottom: calc(0.25em + 2px); line-height: 1; }
+        .division-graphic { display: flex; flex-direction: column; }
+        .quotient-line { display: flex; align-items: flex-end; margin-left: calc(8px + 2px); padding-bottom: 2px; border-bottom: 2px solid black; }
+        .quotient-digits-area { display: flex; }
+        .quotient-digits-area input { width: 1em; height: 1.2em; font-size: 1em; text-align: center; margin-right: 0.5em; border: 1px solid #b0e0e6; background-color: #e0f7fa; box-sizing: border-box; }
+        .final-remainder-area { margin-left: 0.5em; display: flex; align-items: center; font-size: 0.8em; }
+        .final-remainder-area input { width: 3em; height: 1.2em; font-size: 1em; text-align: center; margin-left: 4px; border: 1px solid #ccc; box-sizing: border-box; }
+        .dividend-line { display: flex; align-items: flex-start; padding-top: 5px; }
+        .vertical-bar-area { border-left: 2px solid black; padding-left: 8px; min-height: 1.2em; display: flex; }
+        .dividend-area { display: flex; align-items: flex-start; }
+        .dividend-digit-group { display: flex; flex-direction: column; align-items: center; margin-right: 0.5em; position: relative; width: 1em; text-align: center; line-height: 1; }
+        .dividend-digit-group .carry-input { position: absolute; top: -0.9em; left: -0.7em; width: 1em; height: 0.8em; font-size: 0.6em; text-align: center; border: 1px solid #d3d3d3; color: red; background-color: #fff0f0; box-sizing: border-box; z-index: 1; }
+        .dividend-digit-group .digit-char { display: inline-block; line-height: 1.2; }
+        #feedback { margin-top: 15px; font-weight: bold; }
+        .correct { color: green; }
+        .incorrect { color: red; }
+
+        .scratchpad-container {
+            background-color: #fdfdfd; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); width: 350px; display: flex; flex-direction: column; min-height: 400px;
+        }
+        .scratchpad-container h2 { margin-top: 0; margin-bottom: 10px; font-size: 1.1em; color: #333; text-align: center; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .scratchpad-toolbar { display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee; flex-wrap: wrap; }
+        .tool-button { padding: 6px 10px; font-size: 0.8em; font-weight: bold; color: white; background-color: #868e96; border: 1px solid #6c757d; border-bottom: 2px solid #5a6268; border-radius: 4px; cursor: pointer; box-shadow: 0 1px 1px rgba(0,0,0,0.1); transition: all 0.1s ease-out; margin: 2px; }
+        .tool-button.active { background-color: #5a6268; border-bottom-width: 1px; transform: translateY(1px); }
+        .tool-button:hover:not(.active) { background-color: #6c757d; }
+        .tool-button:active:not(.active) { transform: translateY(1px); border-bottom-width: 1px; }
+        #drawingCanvas { border: 1px solid #ccc; cursor: crosshair; touch-action: none; width: 100%; }
+
+        .toggle-scratchpad-button {
+            display: block; margin: 25px auto 0 auto; padding: 10px 20px; font-size: 0.95em; font-weight: bold; color: white;
+            background-color: #6c757d; border: 1px solid #5a6268; border-bottom: 3px solid #495057; border-radius: 5px;
+            cursor: pointer; box-shadow: 0 2px 2px rgba(0,0,0,0.15); transition: all 0.1s ease-out; text-align: center;
+        }
+        .toggle-scratchpad-button:hover { background-color: #5a6268; border-color: #545b62; border-bottom-color: #3b4045; }
+        .toggle-scratchpad-button:active { background-color: #495057; border-color: #3b4045; box-shadow: inset 0 1px 2px rgba(0,0,0,0.2); transform: translateY(1px); border-bottom-width: 1px; }
+
+        @media (max-width: 768px) {
+            .app-logo-text { font-size: 2em; }
+            .app-subtitle { font-size: 0.8em; }
+            .main-content-wrapper {
+                flex-direction: column; 
+                align-items: center; 
+            }
+            .scratchpad-container {
+                width: 90%; 
+                max-width: 400px; 
+                margin-top: 20px; 
+            }
+        }
+         @media (max-width: 480px) {
+            .app-logo-text { font-size: 1.7em; }
+            .app-subtitle { font-size: 0.75em; }
+             .container {
+                 min-width: 95%;
+                 padding: 10px;
+             }
+             .problem-area {
+                 font-size: 1.5em; 
+             }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="app-branding">
+        <div class="app-logo-text">Jo<span class="lightning">⚡</span>Go</div>
+        <div class="app-subtitle">(Apps for Merrifield Teachers)</div>
+    </div>
+
+    <div class="main-content-wrapper">
+        <div class="container">
+            <div class="equation-input">
+                <input type="text" id="equation" placeholder="e.g., 357 / 3" value="852 / 8">
+                <button onclick="setupProblem()">Set up Problem</button>
+            </div>
+            <div class="problem-area" id="problemDisplay"></div>
+            <button class="check-button" onclick="checkAnswer()" style="margin-top: 20px;">Check Answer</button>
+            <div id="feedback"></div>
+        </div>
+        <div class="scratchpad-container" id="scratchpadContainer" style="display: none;">
+            <h2>Scratchpad</h2>
+            <div class="scratchpad-toolbar">
+                <button id="pencilBtn" class="tool-button active" onclick="setTool('pencil')">Pencil</button>
+                <button id="eraserBtn" class="tool-button" onclick="setTool('eraser')">Eraser</button>
+                <label for="lineWidth" style="font-size:0.8em; margin-left: 5px;">Size:</label>
+                <input type="range" id="lineWidth" min="1" max="20" value="3" onchange="setLineWidth(this.value)" style="width:60px;">
+                <button id="undoBtn" class="tool-button" onclick="undoLast()">Undo</button>
+                <button id="redoBtn" class="tool-button" onclick="redoNext()">Redo</button>
+                <button id="clearBtn" class="tool-button" onclick="clearCanvas()">Clear</button>
+            </div>
+            <canvas id="drawingCanvas"></canvas>
+        </div>
+    </div>
+    <button id="toggleScratchpadBtn" class="toggle-scratchpad-button" onclick="toggleScratchpad()">Show Scratchpad</button>
+
+    <script>
+        // --- JavaScript for the division app ---
+        let currentDividend, currentDivisor;
+        const canvas = document.getElementById('drawingCanvas');
+        let ctx; 
+        let drawing = false;
+        let currentTool = 'pencil';
+        let currentLineWidth = 3;
+        let history = [];
+        let historyPointer = -1;
+
+        function setupProblem() {
+            const equationInput = document.getElementById('equation').value;
+            const problemDisplay = document.getElementById('problemDisplay');
+            const feedback = document.getElementById('feedback');
+            problemDisplay.innerHTML = ''; feedback.textContent = '';
+            const parts = equationInput.split('/').map(s => s.trim());
+            if (parts.length !== 2) { feedback.textContent = "Invalid format. Use 'dividend / divisor'"; feedback.className = 'incorrect'; return; }
+            const dividend = parseInt(parts[0]); const divisor = parseInt(parts[1]);
+            if (isNaN(dividend) || isNaN(divisor) || divisor <= 0 || dividend < 0) { feedback.textContent = "Invalid numbers. Divisor > 0, Dividend >= 0."; feedback.className = 'incorrect'; return; }
+            currentDividend = dividend; currentDivisor = divisor;
+            const dividendStr = dividend.toString();
+            const divisorDisplay = document.createElement('span'); divisorDisplay.className = 'divisor-display'; divisorDisplay.textContent = divisor; problemDisplay.appendChild(divisorDisplay);
+            const divisionGraphic = document.createElement('div'); divisionGraphic.className = 'division-graphic';
+            const quotientLine = document.createElement('div'); quotientLine.className = 'quotient-line';
+            const quotientDigitsArea = document.createElement('div'); quotientDigitsArea.className = 'quotient-digits-area'; quotientDigitsArea.id = 'quotientInputs';
+            for (let i = 0; i < dividendStr.length; i++) { const input = document.createElement('input'); input.type = 'text'; input.maxLength = 1; quotientDigitsArea.appendChild(input); }
+            quotientLine.appendChild(quotientDigitsArea);
+            const remArea = document.createElement('div'); remArea.className = 'final-remainder-area';
+            remArea.innerHTML = `Rem. <input type="text" id="finalRemainderInput" maxLength="${Math.max(1, (divisor -1).toString().length)}">`;
+            quotientLine.appendChild(remArea); divisionGraphic.appendChild(quotientLine);
+            const divLineEl = document.createElement('div'); divLineEl.className = 'dividend-line';
+            const vBarArea = document.createElement('div'); vBarArea.className = 'vertical-bar-area';
+            const divArea = document.createElement('div'); divArea.className = 'dividend-area';
+            for (let i = 0; i < dividendStr.length; i++) {
+                const group = document.createElement('div'); group.className = 'dividend-digit-group';
+                if (i > 0) { const carry = document.createElement('input'); carry.type = 'text'; carry.maxLength = Math.max(1, (divisor -1).toString().length); carry.className = 'carry-input'; carry.id = `carry-${i}`; group.appendChild(carry); }
+                const char = document.createElement('span'); char.className = 'digit-char'; char.textContent = dividendStr[i]; group.appendChild(char);
+                divArea.appendChild(group);
+            }
+            vBarArea.appendChild(divArea); divLineEl.appendChild(vBarArea); divisionGraphic.appendChild(divLineEl);
+            problemDisplay.appendChild(divisionGraphic);
+            if (quotientDigitsArea.firstChild) quotientDigitsArea.firstChild.focus();
+        }
+        function checkAnswer() {
+            const feedback = document.getElementById('feedback');
+            if (currentDividend === undefined) { feedback.textContent = "Set up problem first."; feedback.className = 'incorrect'; return; }
+            document.querySelectorAll('#quotientInputs input, #finalRemainderInput, .carry-input').forEach(el => {
+                el.style.backgroundColor = ''; el.style.borderColor = '';
+                if (el.classList.contains('carry-input')) el.style.backgroundColor = '#fff0f0';
+                else if (el.id === 'finalRemainderInput') el.style.backgroundColor = 'white';
+                else el.style.backgroundColor = '#e0f7fa';
+            });
+            let userQuotientStr = ""; document.querySelectorAll('#quotientInputs input').forEach(i => userQuotientStr += i.value);
+            const userQuotient = parseInt(userQuotientStr) || 0;
+            const finalRemInput = document.getElementById('finalRemainderInput'); let userFinalRem = 0;
+            if (finalRemInput.value.trim() !== "") {
+                if (!/^\d+$/.test(finalRemInput.value.trim())) { feedback.textContent = "Final remainder invalid."; feedback.className = 'incorrect'; finalRemInput.style.backgroundColor = '#ffe0e0'; return; }
+                userFinalRem = parseInt(finalRemInput.value.trim());
+                if (userFinalRem >= currentDivisor) { feedback.textContent = `Remainder too large.`; feedback.className = 'incorrect'; finalRemInput.style.backgroundColor = '#ffe0e0'; return; }
+            }
+            const dividendStr = currentDividend.toString(); const correctCarries = []; const userCarries = []; let tempRem = 0;
+            for (let i = 0; i < dividendStr.length; i++) {
+                const digit = parseInt(dividendStr[i]); let userCarryVal = 0;
+                if (i > 0) { const carryEl = document.getElementById(`carry-${i}`); if (carryEl && carryEl.value.trim() !== "") { if (!/^\d+$/.test(carryEl.value.trim())) { feedback.textContent = `Carry invalid.`; feedback.className = 'incorrect'; carryEl.style.backgroundColor = '#ffe0e0'; return; } userCarryVal = parseInt(carryEl.value.trim()); } userCarries.push(userCarryVal); }
+                const numToDiv = (i === 0 ? 0 : correctCarries[i-1]) * 10 + digit;
+                tempRem = numToDiv % currentDivisor; if (i < dividendStr.length - 1) correctCarries.push(tempRem);
+            }
+            const correctQ = Math.floor(currentDividend / currentDivisor); const correctR = currentDividend % currentDivisor; let carriesOk = true;
+            for (let k = 0; k < correctCarries.length; k++) if (userCarries[k] !== correctCarries[k]) { carriesOk = false; break; }
+            if (userQuotient === correctQ && userFinalRem === correctR && carriesOk) { feedback.textContent = `Correct! ${currentDividend} ÷ ${currentDivisor} = ${correctQ}${correctR > 0 ? ' rem. ' + correctR : ''}`; feedback.className = 'correct'; }
+            else { let msg = "Try Again. "; if (userQuotient !== correctQ || userFinalRem !== correctR) msg += `Expected: ${correctQ}${correctR > 0 ? ' rem. ' + correctR : ''}. `;
+                if (!carriesOk) { msg += "Check carries. "; for (let k = 0; k < correctCarries.length; k++) { const el = document.getElementById(`carry-${k+1}`); if (el && userCarries[k] !== correctCarries[k]) { el.style.backgroundColor = '#ffe0e0'; el.style.borderColor = 'red'; } } }
+                feedback.textContent = msg.trim(); feedback.className = 'incorrect';
+            }
+        }
+        function toggleScratchpad() {
+            const sc = document.getElementById('scratchpadContainer'); const btn = document.getElementById('toggleScratchpadBtn');
+            if (sc.style.display === 'none' || sc.style.display === '') { sc.style.display = 'flex'; btn.textContent = 'Hide Scratchpad'; initCanvas(); }
+            else { sc.style.display = 'none'; btn.textContent = 'Show Scratchpad'; }
+        }
+        function initCanvas() {
+            if (!canvas || canvas.alreadyInitialized) return; 
+            ctx = canvas.getContext('2d');
+            const scContainer = document.getElementById('scratchpadContainer');
+            const toolbar = scContainer.querySelector('.scratchpad-toolbar');
+            const h2Title = scContainer.querySelector('h2');
+            const containerPaddingVertical = parseFloat(getComputedStyle(scContainer).paddingTop) + parseFloat(getComputedStyle(scContainer).paddingBottom);
+            const containerPaddingHorizontal = parseFloat(getComputedStyle(scContainer).paddingLeft) + parseFloat(getComputedStyle(scContainer).paddingRight);
+            canvas.width = scContainer.clientWidth - containerPaddingHorizontal;
+            let calculatedHeight = scContainer.clientHeight - containerPaddingVertical;
+            if (h2Title) calculatedHeight -= (h2Title.offsetHeight + parseFloat(getComputedStyle(h2Title).marginBottom));
+            if (toolbar) calculatedHeight -= (toolbar.offsetHeight + parseFloat(getComputedStyle(toolbar).marginBottom));
+            calculatedHeight -= 2; 
+            canvas.height = Math.max(150, calculatedHeight); 
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = 'black'; ctx.lineWidth = currentLineWidth;
+            clearCanvas(false); saveState(); updateUndoRedoButtons(); 
+            canvas.alreadyInitialized = true; 
+        }
+        function getMousePos(evt) { const rect = canvas.getBoundingClientRect(); return { x: evt.clientX - rect.left, y: evt.clientY - rect.top }; }
+        function getTouchPos(evt) { const rect = canvas.getBoundingClientRect(); return { x: evt.touches[0].clientX - rect.left, y: evt.touches[0].clientY - rect.top }; }
+        function startDraw(e) { e.preventDefault(); drawing = true; const pos = e.touches ? getTouchPos(e) : getMousePos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); }
+        function draw(e) { if (!drawing) return; e.preventDefault(); const pos = e.touches ? getTouchPos(e) : getMousePos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); }
+        function stopDraw() { if (drawing) { ctx.closePath(); drawing = false; saveState(); } }
+        function setTool(tool) {
+            currentTool = tool; document.querySelectorAll('.tool-button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tool + 'Btn').classList.add('active');
+            if (tool === 'pencil') { ctx.globalCompositeOperation = 'source-over'; ctx.strokeStyle = 'black'; }
+            else if (tool === 'eraser') { ctx.globalCompositeOperation = 'destination-out'; }
+            ctx.lineWidth = currentLineWidth; 
+        }
+        function setLineWidth(width){ currentLineWidth = parseInt(width); ctx.lineWidth = currentLineWidth; }
+        function saveState() { if (historyPointer < history.length - 1) { history = history.slice(0, historyPointer + 1); } history.push(canvas.toDataURL()); historyPointer++; updateUndoRedoButtons(); }
+        function restoreState(index) { if (!ctx) return; const img = new Image(); img.onload = function() { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.drawImage(img, 0, 0); }; img.src = history[index]; }
+        function undoLast() { if (historyPointer > 0) { historyPointer--; restoreState(historyPointer); } updateUndoRedoButtons(); }
+        function redoNext() { if (historyPointer < history.length - 1) { historyPointer++; restoreState(historyPointer); } updateUndoRedoButtons(); }
+        function clearCanvas(save = true) { if (!ctx) return; ctx.clearRect(0, 0, canvas.width, canvas.height); if (save) saveState(); }
+        function updateUndoRedoButtons(){ document.getElementById('undoBtn').disabled = historyPointer <= 0; document.getElementById('redoBtn').disabled = historyPointer >= history.length - 1; }
+        
+        window.onload = function() { 
+            setupProblem(); 
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDraw);
+            canvas.addEventListener('mouseleave', stopDraw);
+            canvas.addEventListener('touchstart', startDraw, { passive: false });
+            canvas.addEventListener('touchmove', draw, { passive: false });
+            canvas.addEventListener('touchend', stopDraw);
+            canvas.addEventListener('touchcancel', stopDraw);
+            updateUndoRedoButtons();
+
+            // --- Service Worker Registration ---
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', () => { 
+                navigator.serviceWorker.register('./sw.js')
+                  .then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                  })
+                  .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                  });
+              });
+            }
+        };
+    </script>
+
+</body>
+</html>
